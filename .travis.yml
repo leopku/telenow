@@ -1,0 +1,32 @@
+os: linux
+
+language: minimal
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+cache:
+  directories:
+    - $GOPATH/pkg/mod
+
+script:
+  - >-
+    docker build \
+      -f Dockerfile.dev \
+      --build-arg _project_path=github.com/mitinarseny/telego \
+      --build-arg GID=12345 \
+      --build-arg UID=54321 \
+      .
+
+notifications:
+  webhooks:
+    urls:
+      - https://fathomless-fjord-24024.herokuapp.com/notify
+    on_success: change
+    on_failure: always
+    on_start: never
+    on_cancel: always
+    on_error: always
+  email: false

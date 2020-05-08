@@ -1,0 +1,41 @@
+version: '3.7'
+
+networks:
+  telego:
+
+volumes:
+  mongodb:
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+      args:
+        _project_path: "github.com/mitinarseny/telego"
+        GID: 12345
+        UID: 54321
+    environment:
+      TELEGO_DB_HOST: db
+      TELEGO_DB_PORT: 27017
+      TELEGO_DB_USER: bot
+      TELEGO_DB_PASSWORD: Password123!
+      TELEGO_DB_NAME: bot
+    depends_on:
+      - db
+    networks:
+      - telego
+
+  db:
+    image: mongo:4.2.0-bionic
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bot
+      MONGO_INITDB_ROOT_PASSWORD: Password123!
+    volumes:
+      - mongodb:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - telego
